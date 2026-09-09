@@ -1,6 +1,15 @@
 # Architecture Notes
 
-These notes describe the supplied handwritten design drawings. They distinguish visible design intent from facts that require the final implementation. The diagrams have not been checked against HDL or a synthesis report.
+These notes describe the earlier Lab 4a handwritten design drawings. The later Lab 4b implementation deliverable records changes to that plan and supplies simulation and FPGA report evidence, summarized below and in the [verification results](verification.md). The drawings have not been checked against the final HDL.
+
+## Changes Documented During Implementation
+
+- The team introduced smaller calibration and alert FSMs under a main controller after the original low-level control plan became difficult to implement.
+- The seismic unit was adapted to **16-bit samples**, with roughly **4,095 data points per file**. Multiple wave-pattern ROM files were consolidated into one looping wave file, removing the planned separate iteration engine. The 5-bit labels and selection logic in the drawings describe the earlier plan, not confirmed final widths or topology.
+- Lab 4b uses Off, Calibration, Measuring/Tracking, and Acknowledge. It reports four-sample calibration, a persistent alert when `reading - baseline > 5`, and acknowledgement that clears the latch/value.
+- The implementation reports identify Vivado 2025.2.1, top-level design `eew_top`, and device `xc7a35tcpg236-1`. The accompanying utilization report is labeled Fully Placed.
+
+These details come from the Lab 4b deliverable, pp. 2-8 and 10. Its scenario table and waveform error counters require reconciliation; see the [simulation evidence](verification.md#simulation-evidence).
 
 ## Evidence Available
 
@@ -42,17 +51,17 @@ The tracking FSM moves from an inactive state to a monitoring state when `trk_ac
 
 The seven-segment section contains four ROM access paths, per-character address arithmetic, a shared display multiplexer, and a 5 x 5-bit register file. A handwritten note identifies the register file as storage for the first-character address of each message. Window logic is annotated with `(I + offset) % N`, using character offsets 0 through 3 and a message length `N`.
 
-The LED section contains a slide-bar module and a two-to-four decoder connected to LEDs labeled `LD15` through `LD0`. TODO: confirm the exact meaning of each display output and how the state and alert indications are encoded.
+The LED section contains a slide-bar module and a two-to-four decoder connected to LEDs labeled `LD15` through `LD0`. Lab 4b identifies `LD3:0` as the mode indicators and `LD15:6` as the reading-minus-baseline bar, with flashing during an alert. The scenario table names `OFF`, `DONE`, `READING`, `ALERT`, and `ACKNOWLEDGED` display messages. Display timing and the final implementation still require source confirmation.
 
 ## Implementation Questions
 
 | Question | Why it needs confirmation |
 | --- | --- |
-| Is the implemented datapath 16-bit or 5-bit? | The brief says 16-bit; sample and arithmetic blocks in the drawing are mainly labeled 5-bit. Sixteen LED outputs do not prove a 16-bit arithmetic datapath. |
-| How do Pause and Acknowledge relate? | The brief names Pause; the HLSM instead names Acknowledge. Their equivalence is not established. |
-| Which HDL language and FPGA tools were used? | Verilog appears as a possible technology in the brief, but no source or build project is supplied. |
+| What are the final arithmetic widths? | Lab 4b confirms 16-bit input samples, superseding the earlier 5-bit sample plan. Register and intermediate widths, signedness, and overflow handling require HDL. |
+| What is the physical button mapping? | Lab 4b establishes the four mode names, but its scenario table and named testbench inputs do not establish the board-button assignments or debounce logic. |
+| Which HDL language was used for the implementation? | Lab 4b names `.sv` testbenches and Vivado 2025.2.1, but the main implementation source and build project are still absent. |
 | What is the clock and sample rate? | The drawing includes a clock-divider annotation involving 50,000,000, but that is insufficient to establish the implemented input clock, divider behavior, or sample rate. |
 | Are the green `async_tick` connections clock inputs or enables? | The drawing labels them, but the final RTL and timing constraints are needed to describe clocking safely and accurately. |
 | What is the threshold's unit and exact arithmetic? | A comparison to 5 is visible; signedness, scaling, overflow, and underflow behavior are unspecified. |
-| What are the stored signals? | ROM access is shown, but provenance, sample count, sampling interval, and physical units are absent. |
-| What was personally implemented and verified? | Individual ownership, team responsibilities, and test records were not supplied. |
+| What are the stored signals? | Lab 4b describes 16-bit samples, roughly 4,095 points per file, and one looping wave file. The actual memory contents, provenance, sampling interval, and physical units remain unavailable. |
+| What was personally implemented and verified? | Lab 4b credits JP and Inu Baek and supplies team-level results; individual responsibilities and reproducible test logs are not specified. |
