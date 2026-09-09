@@ -30,7 +30,7 @@ The lab's scenario table reports the following five checks as **Pass** (p. 3). T
 
 ![Integration simulation with display and LED outputs and visible error counter](../images/verification/integration-waveform.png)
 
-At the screenshot's displayed time of **607.000 ns**, the value column shows **`errors[31:0] = 00000003`**. This nonzero counter is unresolved and prevents treating the table's five Pass entries as a confirmed clean regression. The available document does not identify the failing checks, the counter's intended semantics, or whether the table and screenshots come from the same revision. Resolving this requires the original testbenches, logs, and a rerun against the final HDL.
+At the screenshot's displayed time of **607.000 ns**, the value column shows **`errors[31:0] = 00000003`**. This nonzero counter is unresolved and prevents treating the table's five Pass entries as a confirmed clean regression. The available document does not identify the failing checks, the counter's intended semantics, or whether the table and screenshots come from the same revision. 
 
 ## Debugging and Implementation Refinements
 
@@ -39,7 +39,7 @@ The team's implementation retrospective documents two concrete changes from the 
 | Implementation problem | Change made | Documented outcome |
 | --- | --- | --- |
 | The original datapath plan used low-level combinational control that became difficult to implement, particularly for alert behavior and the calibration incrementer. | Introduced smaller FSMs for portions of the datapath, including alert and calibration FSMs, sequenced by the main controller. | The team reports clearer control organization. A before/after test log linking these changes to specific resolved failures is not supplied. |
-| The seismic input plan preceded confirmation of the actual WAV data format. | Reworked the seismic unit to read **16-bit samples**, with roughly **4,095 data points per file**; consolidated the wave-pattern ROM files into one looping wave file. | Removed the separate iteration engine proposed in the earlier plan. Final HDL and memory files remain needed to reproduce the data path. |
+| The seismic input plan preceded confirmation of the actual WAV data format. | Reworked the seismic unit to read **16-bit samples**, with roughly **4,095 data points per file**; consolidated the wave-pattern ROM files into one looping wave file. | Removed the separate iteration engine proposed in the earlier plan.  |
 
 These are documented design refinements, not a reconstructed account of the nonzero simulation counters. The deliverable does not establish their root cause or show that these changes cleared those counters.
 
@@ -57,14 +57,10 @@ The embedded timing summaries report positive setup, hold, and pulse-width slack
 | Total negative pulse-width slack, TPWS | 0.000 ns | 0.000 ns |
 | Failing endpoints: setup / hold / pulse width | 0 / 0 / 0 | 0 / 0 / 0 |
 
-<details>
-<summary>View the supplied timing summaries</summary>
-
 ![Synthesis timing summary from lab deliverable page 4](../images/verification/synthesis-timing.png)
 
 ![Implementation timing summary from lab deliverable page 6](../images/verification/implementation-timing.png)
 
-</details>
 
 The accompanying implementation utilization report identifies its design state as **Fully Placed**. The screenshots do not establish a post-route timing signoff or disclose the clock constraints. Clock frequency, sample update rate, and detector latency therefore remain unconfirmed by this deliverable.
 
@@ -81,15 +77,5 @@ The utilization reports identify **Vivado 2025.2.1**, top-level design **`eew_to
 | Bonded IOBs | 34 (32.08%) | 34 (32.08%) |
 
 The block-memory usage consists of three RAMB36E1 primitives and one RAMB18E1 primitive. Both utilization reports list zero inferred register latches.
-
-## Remaining Verification Work
-
-- Publish the final HDL, constraints, ROM initialization files, testbenches, simulator logs, and the tested revision so the reported checks can be reproduced.
-- Reconcile the waveform error counters with the scenario table, identify each failing check, and record the fix and a clean rerun.
-- Confirm hardware button mappings, synchronization/debounce behavior, arithmetic widths and signedness, overflow handling, and threshold units against the final source.
-- Add arithmetic boundary, exact-threshold, ROM wrap, interrupted calibration, and repeated/simultaneous-input cases if not already covered by the original testbenches.
-- Preserve the clock constraints and final routed timing report; measure detector latency and sample update rate if needed.
-- Document sample provenance and a labeled evaluation before claiming detection accuracy, false-positive/false-negative rates, or real-world seismic validation.
-- Record each collaborator's specific implementation and verification contributions.
 
 The [board demonstration](../media/fpga-demo.mp4) and [architecture notes](architecture.md) provide complementary evidence of the project and its design history.
