@@ -14,26 +14,6 @@ This project implements an earthquake detection demonstrator on a Basys 3 FPGA b
 
 The available materials document the architecture and include a board demonstration. HDL, constraints, ROM initialization files, and verification reports still need to be added before the implementation can be reproduced.
 
-## System Architecture
-
-```mermaid
-flowchart LR
-    Buttons[Push-button inputs] --> Control[Mode control FSM]
-    ROM[Stored sample data / ROM] --> Datapath[Sample and magnitude datapath]
-    Datapath --> Calibration[Calibration registers and average]
-    Calibration --> Detection[Baseline comparison]
-    Datapath --> Detection
-    Detection --> Alert[Tracking / alert FSM]
-    Control --> Calibration
-    Control --> Alert
-    Control --> Display[Display and LED control]
-    Alert --> Display
-    Display --> LEDs[LED outputs]
-    Display --> Segments[Seven-segment display]
-```
-
-This is a functional summary of the supplied design drawings. The [full datapath drawing](hardware/datapath.pdf) contains the register, arithmetic, ROM, and display connections; [architecture notes](docs/architecture.md) explain what the drawings establish and what still requires confirmation.
-
 ## Modes of Operation
 
 | State in the HLSM | Role documented by the diagrams |
@@ -42,8 +22,6 @@ This is a functional summary of the supplied design drawings. The [full datapath
 | Calibration (`01`) | A separate controller loads four calibration registers, then loads an average register. |
 | Tracking (`10`) | A tracking controller monitors the threshold indication and controls the alert output mode. |
 | Acknowledge (`11`) | Provides the acknowledgement input used to clear the tracking controller's latched alert. |
-
-**TODO — confirm final mode names:** the project brief uses “Read / Detect” and “Pause,” while the HLSM labels the corresponding operating states “Tracking” and “Acknowledge.” Their exact relationship must be checked against the final HDL and button behavior.
 
 ## Datapath
 
@@ -56,8 +34,6 @@ The design drawing shows:
 - ROM-based display data, character-window logic, a display multiplexer, an LED bar module, and a state decoder.
 
 ![Datapath drawing with sample processing, calibration, detection, and display logic](images/architecture/datapath.png)
-
-**TODO — reconcile arithmetic widths:** the project brief describes a 16-bit datapath; the drawing labels many sample registers and arithmetic blocks as 5-bit, with wider intermediate sums. The final HDL is needed to establish the implemented widths, signedness, overflow handling, and relationship to the 16-LED output.
 
 ## Control FSMs
 
@@ -77,12 +53,6 @@ The design drawing shows:
 | Stored sample data | Supplies the input sequence used by the detector. Sample provenance, units, and ROM contents are TODO. |
 | LEDs | Show state and datapath/alert information. Confirm the final LED mapping. |
 | Seven-segment display | Displays information through ROM access, window logic, and multiplexing. Confirm the message strings and update rate. |
-
-## My Contribution
-
-Implemented the FPGA earthquake detection system on a Digilent Basys 3 board using a datapath and control logic.
-
-**TODO:** identify which HDL modules, state machines, datapath blocks, board integration, and verification tasks I personally completed; include collaborators and attribution if this was a team project. Confirm the HDL language before adding Verilog to the technology list.
 
 ## Verification, Debugging & Results
 
